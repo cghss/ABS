@@ -84,3 +84,99 @@ for (subtopic in unique.subtopics) {
   assign(stats_df_name, stats.df)
 }
 
+#okay gotta make these regions into factors so they will place nice with ggplot
+L.df.stats$WHO_Region <- factor(L.df.stats$WHO_Region)
+
+#make a bar chart
+ggplot(L.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  ggtitle("Legal Sanctions") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank())
+
+ggplot(A.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC","#005E98", "#DEDBDB", "#98D9DC", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  ggtitle("Access") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank())
+
+ggplot(B.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC","#005E98", "#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  ggtitle("Benefit-sharing") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank())
+
+ggplot(C.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC","#DEDBDB", "#005E98", "#98D9DC", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  ggtitle("Compliance") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank())
+
+
+ggplot(D.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC", "#005E98", "#98D9DC", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  ggtitle("DSI") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank())
+
+
+ggplot(P.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  ggtitle("PIC") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank())
+
+ggplot(S.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  ggtitle("Scope of Legislation") +
+  theme_bw() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank())
