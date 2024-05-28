@@ -11,6 +11,14 @@ who.raw <- read.csv("WHO_Regions.csv")
 #Add iso codes to abd.raw
 abs.raw$ISO <- countrycode(sourcevar = abs.raw$Country, origin = "country.name", destination = "iso3c")
 
+#ugh we need to add back in three of these countries
+
+lost.countries <- data.frame(Country.Name = c("Cote d'Ivoire", "Liechtenstein", "Niue"), 
+                             ISO3 = c("CIV", "LIE", "NIU"), 
+                             WHO_Region = c("AFRO", "EURO", "WPRO"))
+
+who.raw <- rbind(who.raw, lost.countries)
+
 #Add our who regions to the abs.raw df
 merged_data <- left_join(abs.raw, who.raw, by = c("ISO" = "ISO3"))
 
@@ -24,6 +32,7 @@ if (length(unmatched.iso) > 0) {
 } else {
   print("All ISO codes were matched successfully.")
 }
+
 
 #The entities that are unmatched beyond the scope of the project as they are not one of the 194 UN member states. They were removed. 
 abs.data <- merged_data %>% filter(!is.na(WHO_Region))
@@ -180,3 +189,4 @@ ggplot(S.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
         panel.grid.minor = element_blank(),
         panel.border = element_blank(), 
         axis.ticks.y = element_blank())
+
