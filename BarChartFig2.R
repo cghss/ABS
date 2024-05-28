@@ -3,7 +3,9 @@ library(dplyr)
 library(countrycode)
 library(rnaturalearth)
 library(ggplot2)
+library(patchwork)
 
+#First we are going to make all of our bar charts
 #Loading our data
 abs.raw <- read.csv("AbsMaster.csv")
 who.raw <- read.csv("WHO_Regions.csv")
@@ -97,7 +99,7 @@ for (subtopic in unique.subtopics) {
 L.df.stats$WHO_Region <- factor(L.df.stats$WHO_Region)
 
 #make a bar chart
-ggplot(L.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+Fig2A <- ggplot(L.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
   labs(x = "WHO Region", y = "Percentage", fill = "Status") +
@@ -123,9 +125,9 @@ ggplot(A.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
         panel.border = element_blank(), 
         axis.ticks.y = element_blank())
 
-ggplot(B.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+Fig1A <- ggplot(B.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values =c("#B598DC","#005E98", "#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  scale_fill_manual(values =c("#B598DC","#005E98", "#98D9DC", "#DEDBDB")) + 
   labs(x = "WHO Region", y = "Percentage", fill = "Status") +
   ggtitle("Benefit-sharing") +
   theme_bw() +
@@ -189,4 +191,233 @@ ggplot(S.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
         panel.grid.minor = element_blank(),
         panel.border = element_blank(), 
         axis.ticks.y = element_blank())
+
+#Now we are going to make our maps
+abs.raw <- read.csv("AbsMaster.csv")
+
+abs.raw$ISO <- countrycode(sourcevar = abs.raw$Country, origin = "country.name", destination = "iso3c")
+
+enforce.df <- abs.raw %>%
+  filter(grepl("Legal sanctions", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+access.df <- abs.raw %>%
+  filter(grepl("Access to resources", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+scope.df <- abs.raw %>%
+  filter(grepl("Scope of legislation", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+dsi.df <- abs.raw %>%
+  filter(grepl("Digital sequence information (DSI)", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+pic.df <- abs.raw %>%
+  filter(grepl("Prior informed consent (PIC)", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+terms.df <- abs.raw %>%
+  filter(grepl("Contractual terms", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+ben.df<- abs.raw %>%
+  filter(grepl("Benefit-sharing", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+com.df<- abs.raw %>%
+  filter(grepl("Compliance", Subtopic, ignore.case = TRUE)) %>%
+  data.frame()
+
+map <- ne_countries(type = 'countries')
+
+enforce.data <- inner_join(enforce.df, map, by = c("ISO" = "iso_a3_eh"))
+access.data <- inner_join(access.df, map, by = c("ISO" = "iso_a3_eh"))
+scope.data <- inner_join(scope.df, map, by = c("ISO" = "iso_a3_eh"))
+dsi.data <- inner_join(dsi.df, map, by = c("ISO" = "iso_a3_eh"))
+terms.data <- inner_join(terms.df, map, by = c("ISO" = "iso_a3_eh"))
+ben.data <- inner_join(ben.df, map, by = c("ISO" = "iso_a3_eh"))
+com.data <- inner_join(com.df, map, by = c("ISO" = "iso_a3_eh"))
+
+Fig2B <- ggplot() +
+  geom_sf(data = enforce.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
+  theme_minimal() +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  ggtitle("Legal Sanctions") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    legend.position = "right",  
+    legend.title = element_blank())
+print(Fig2B)
+
+access.map <- ggplot() +
+  geom_sf(data = access.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
+  #scale_fill_gradientn(colours = rev(viridis(45, option = "G")), na.value = "white", breaks = seq(0, max(df$n), by = 5))+
+  theme_minimal() +
+  scale_fill_manual(values =c("#B598DC","#005E98","#DEDBDB","#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  ggtitle("Access to resources") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    legend.position = "right",  
+    legend.title = element_blank())
+#print(access.map)
+
+
+scope.map <- ggplot() +
+  geom_sf(data = scope.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
+  #scale_fill_gradientn(colours = rev(viridis(45, option = "G")), na.value = "white", breaks = seq(0, max(df$n), by = 5))+
+  theme_minimal() +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  ggtitle("Scope of legislation") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    legend.position = "right",  
+    legend.title = element_blank())
+#print(scope.map)
+
+dsi.map <- ggplot() +
+  geom_sf(data = dsi.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
+  #scale_fill_gradientn(colours = rev(viridis(45, option = "G")), na.value = "white", breaks = seq(0, max(df$n), by = 5))+
+  theme_minimal() +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  ggtitle("DSI") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    legend.position = "right",  
+    legend.title = element_blank())
+#print(dsi.map)
+
+terms.map <- ggplot() +
+  geom_sf(data = terms.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
+  #scale_fill_gradientn(colours = rev(viridis(45, option = "G")), na.value = "white", breaks = seq(0, max(df$n), by = 5))+
+  theme_minimal() +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  ggtitle("Contractual Terms") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    legend.position = "right",  
+    legend.title = element_blank())
+#print(terms.map)
+
+Fig1B <- ggplot() +
+  geom_sf(data = ben.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
+  theme_minimal() +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB")) + 
+  ggtitle("Benefits-sharing") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    legend.position = "right",  
+    legend.title = element_blank())
+#print(Fig1B)
+
+com.map <- ggplot() +
+  geom_sf(data = com.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
+  #scale_fill_gradientn(colours = rev(viridis(45, option = "G")), na.value = "white", breaks = seq(0, max(df$n), by = 5))+
+  theme_minimal() +
+  scale_fill_manual(values =c("#B598DC","#DEDBDB","#005E98", "#DEDBDB", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  ggtitle("Compliance") +
+  theme(
+    plot.title = element_text(hjust = 0.5),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    axis.text = element_blank(),
+    axis.ticks = element_blank(), 
+    legend.position = "right",  
+    legend.title = element_blank())
+#print(com.map)
+
+#Time to create the combined figures, just reloading these for ease
+
+Fig1A <- ggplot(B.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        legend.position = "right",  
+        legend.title = element_blank())
+
+Fig1B <- ggplot() +
+  geom_sf(data = ben.data, aes(fill = Status, geometry = geometry), color = "black", size = 0.2, show.legend = FALSE) +
+  geom_sf(data = ben.data, aes(fill = Status, geometry = geometry), color = NA) +
+  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB")) + 
+  labs(fill = "Status") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(), 
+        panel.border = element_blank(), 
+        legend.position = "right",  
+        legend.title = element_blank())
+
+#Figure 1
+Figure1 <- Fig1A + Fig1B + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+print(Figure1)
+
+#Now make figure 2
+Fig2A <- ggplot(L.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  #ggtitle("Legal Sanctions") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        legend.position = "right",  
+        legend.title = element_blank())
+  
+Fig2B <- ggplot() +
+  geom_sf(data = enforce.data, aes(fill = Status, geometry = geometry), color = "black", size = 0.2, show.legend = FALSE) +
+  geom_sf(data = enforce.data, aes(fill = Status, geometry = geometry), color = NA) +
+  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB", "#A73B00")) + 
+  labs(fill = "Status") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(), 
+        panel.border = element_blank(), 
+        legend.position = "right",  
+        legend.title = element_blank())
+
+#Figure 2
+Figure2 <- Fig2A + Fig2B + plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+print(Figure2)
 
