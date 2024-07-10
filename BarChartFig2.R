@@ -152,7 +152,7 @@ ggplot(C.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
         axis.ticks.y = element_blank())
 
 
-ggplot(D.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+dsi.bar <- ggplot(D.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values =c("#B598DC", "#005E98", "#98D9DC", "#A73B00", "blue", "black")) + 
   labs(x = "WHO Region", y = "Percentage", fill = "Status") +
@@ -164,7 +164,7 @@ ggplot(D.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
         panel.grid.minor = element_blank(),
         panel.border = element_blank(), 
         axis.ticks.y = element_blank())
-
+print(dsi.bar)
 
 ggplot(P.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
   geom_bar(stat = "identity") +
@@ -210,11 +210,11 @@ scope.df <- abs.raw %>%
   data.frame()
 
 dsi.df <- abs.raw %>%
-  filter(grepl("Digital sequence information (DSI)", Subtopic, ignore.case = TRUE)) %>%
+  filter(grepl("DSI", Subtopic, ignore.case = TRUE)) %>%
   data.frame()
 
 pic.df <- abs.raw %>%
-  filter(grepl("Prior informed consent (PIC)", Subtopic, ignore.case = TRUE)) %>%
+  filter(grepl("PIC", Subtopic, ignore.case = TRUE)) %>%
   data.frame()
 
 terms.df <- abs.raw %>%
@@ -268,7 +268,7 @@ access.map <- ggplot() +
     axis.ticks = element_blank(), 
     legend.position = "right",  
     legend.title = element_blank())
-#print(access.map)
+print(access.map)
 
 
 scope.map <- ggplot() +
@@ -285,7 +285,7 @@ scope.map <- ggplot() +
     axis.ticks = element_blank(), 
     legend.position = "right",  
     legend.title = element_blank())
-#print(scope.map)
+print(scope.map)
 
 dsi.map <- ggplot() +
   geom_sf(data = dsi.data, aes(fill = Status, geometry = geometry),color = "black", size = 0.2) +
@@ -354,7 +354,7 @@ com.map <- ggplot() +
 
 Fig1A <- ggplot(B.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
   geom_bar(stat = "identity") +
-  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB")) + 
+  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#A73B00", "#DEDBDB")) + 
   labs(x = "WHO Region", y = "Percentage", fill = "Status") +
   theme_minimal() +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
@@ -369,7 +369,7 @@ Fig1A <- ggplot(B.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) 
 Fig1B <- ggplot() +
   geom_sf(data = ben.data, aes(fill = Status, geometry = geometry), color = "black", size = 0.2, show.legend = FALSE) +
   geom_sf(data = ben.data, aes(fill = Status, geometry = geometry), color = NA) +
-  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB")) + 
+  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#A73B00", "#DEDBDB")) + 
   labs(fill = "Status") +
   theme_minimal() +
   theme(plot.title = element_text(hjust = 0.5),
@@ -421,3 +421,48 @@ Figure2 <- Fig2A + Fig2B + plot_layout(guides = "collect") &
   theme(legend.position = "bottom")
 print(Figure2)
 
+Fig3A <- ggplot(D.df.stats, aes(x = WHO_Region, y = Percentage, fill = Status)) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values =c("#B598DC","#005E98","#98D9DC", "#DEDBDB", "#A73B00", "blue", "black")) + 
+  labs(x = "WHO Region", y = "Percentage", fill = "Status") +
+  #ggtitle("DSI") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1),
+        plot.background = element_blank(),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        panel.border = element_blank(), 
+        axis.ticks.y = element_blank(), 
+        legend.position = "right",  
+        legend.title = element_blank())
+
+Fig3B <- ggplot() +
+  geom_sf(data = dsi.data, aes(fill = Status, geometry = geometry), color = "black", size = 0.2, show.legend = FALSE) +
+  geom_sf(data = dsi.data, aes(fill = Status, geometry = geometry), color = NA) +
+  scale_fill_manual(values = c("#B598DC", "#005E98", "#98D9DC", "#DEDBDB", "#A73B00")) + 
+  labs(fill = "Status") +
+  theme_minimal() +
+  theme(plot.title = element_text(hjust = 0.5),
+        panel.grid.major = element_blank(),
+        panel.grid.minor = element_blank(),
+        axis.text = element_blank(),
+        axis.ticks = element_blank(), 
+        panel.border = element_blank(), 
+        legend.position = "right",  
+        legend.title = element_blank())
+Figure3 <- Fig3A + Fig3B + plot_layout(guides = "collect") &
+  theme(legend.position = "bottom")
+print(Figure3)
+
+
+Figure1 <- (Fig1A | Fig1B) + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+Figure2 <- (Fig2A | Fig2B) + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+Figure3 <- (Fig3A | Fig3B) + plot_layout(guides = "collect") & theme(legend.position = "bottom")
+
+
+# Combine the three figures vertically with equal proportions
+CombinedFigure <- (Figure1 / Figure2 / Figure3) + 
+  plot_layout(ncol = 1, heights = c(1, 1, 1))
+
+# Print the combined figure
+print(CombinedFigure)

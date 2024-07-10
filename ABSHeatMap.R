@@ -6,7 +6,7 @@ library(rnaturalearth)
 library(ggplot2)
 library(patchwork)
 
-#First we are going to make all of our bar charts
+
 #Loading our data
 abs.raw <- read.csv("AbsMaster.csv")
 who.raw <- read.csv("WHO_Regions.csv")
@@ -105,7 +105,7 @@ Benefit <- Benefit %>%
     TRUE ~ NA_character_  # This handles any other cases
   ))
 
-Prior <- Prior %>%
+Prior <- PIC %>%
   mutate(Policy_Status = case_when(
     Status %in% c("Access is unrestricted",
                   "Access is restricted and PIC is required",
@@ -122,7 +122,7 @@ Access <- Access %>%
     TRUE ~ NA_character_  # This handles any other cases
   ))
 
-Digital <- Digital %>%
+Digital <- DSI %>%
   mutate(Policy_Status = case_when(
     Status %in% c("DSI is included",
                   "DSI is explicitly excluded",
@@ -225,6 +225,11 @@ merged_df <- merged_df[order(merged_df$WHO_Region), ]
 
 #Reshape so that she plays nice with ggplot :)
 long_merged_df <- tidyr::pivot_longer(merged_df, cols = starts_with("PercentagePol"), names_to = "Result_Category", values_to = "PercentagePol")
+
+#I am just reordering the x axis to make it easier for a reader to understand with the other figures in the paper
+desired_order <- c("PercentagePol_accresults","PercentagePol_comresults","PercentagePol_scoresults", "PercentagePol_benresult", "PercentagePol_digresults", "PercentagePol_priresults", "PercentagePol_conresults", "PercentagePol_leresults")
+
+long_merged_df$Result_Category <- factor(long_merged_df$Result_Category, levels = desired_order)
 
 #Make the x axis labels something intelligible
 category_labels <- c(
