@@ -8,8 +8,8 @@ library(patchwork)
 
 
 #Loading our data
-abs.raw <- read.csv("AbsMaster.csv")
-who.raw <- read.csv("WHO_Regions.csv")
+abs.raw <- read.csv("data/AbsMaster.csv")
+who.raw <- read.csv("data/WHO_Regions.csv")
 
 #Add iso codes to abd.raw
 abs.raw$ISO <- countrycode(sourcevar = abs.raw$Country, origin = "country.name", destination = "iso3c")
